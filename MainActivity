@@ -1,0 +1,69 @@
+package com.example.entertainmentnear;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+public class MainActivity extends AppCompatActivity {
+    private EditText userName, password, repassword;
+    private Button signup, sign_in;
+    private DbHelper dbHelper;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        dbHelper = new DbHelper(this);
+
+        userName = (EditText) findViewById(R.id.username);
+        password = (EditText) findViewById(R.id.password);
+        repassword = (EditText) findViewById(R.id.repassword);
+
+        signup = (Button) findViewById(R.id.signup);
+        sign_in = (Button) findViewById(R.id.sign_in);
+
+        signup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String user = userName.getText().toString();
+                String pass = password.getText().toString();
+                String repass = repassword.getText().toString();
+                
+                if(user.equals("")||pass.equals("")||repass.equals("")){
+                    Toast.makeText(MainActivity.this, "Please enter all the fields", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    if(pass.equals(repass)){
+                        boolean result = dbHelper.checkUserName(user);
+                        if(result==false){
+                            boolean insert=dbHelper.insert_Data(user,pass);
+                            if(insert==true){
+                                Toast.makeText(MainActivity.this, "Signup successfully", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(MainActivity.this,LocationNear.class);
+                                startActivity(intent);
+                            }else{
+                                Toast.makeText(MainActivity.this, "Signup not successfully", Toast.LENGTH_SHORT).show();
+                            }
+                        }else{
+                            Toast.makeText(MainActivity.this, "User already exist", Toast.LENGTH_SHORT).show();
+                        }
+                    }else{
+                        Toast.makeText(MainActivity.this, "Password Mismatch", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+
+        sign_in.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this,Login.class);
+                startActivity(intent);
+            }
+        });
+    }
+}

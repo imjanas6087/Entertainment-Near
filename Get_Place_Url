@@ -1,0 +1,42 @@
+package com.example.entertainmentnear;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+
+import javax.net.ssl.HttpsURLConnection;
+
+public class Get_Place_Url {
+
+    public String retriveUrl(String url) throws IOException{
+        String urlData="";
+        HttpsURLConnection httpsURLConnection = null;
+        InputStream stream = null;
+
+        try{
+            URL getUrl = new URL(url);
+            httpsURLConnection = (HttpsURLConnection) getUrl.openConnection();
+            httpsURLConnection.connect();
+
+            stream = httpsURLConnection.getInputStream();
+            BufferedReader br = new BufferedReader(new InputStreamReader(stream));
+            StringBuffer stringBuffer = new StringBuffer();
+
+            String line = "";
+            while((line = br.readLine())!=null){
+                stringBuffer.append(line);
+            }
+            urlData = stringBuffer.toString();
+            br.close();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        finally {
+            stream.close();
+            httpsURLConnection.connect();
+        }
+        return urlData;
+    }
+}
